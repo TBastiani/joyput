@@ -3,6 +3,8 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <stdint.h>
 #include <linux/input.h>
 
 #define DEBUG
@@ -69,6 +71,8 @@ void read_event(joydata_t *joydata)
 
 	if (size < sizeof(struct input_event))
 		die("Read a length lower than sizeof(struct input_event). Case not handled.");
+
+	joydata->read_pending = 1;
 }
 
 void translate_event(joydata_t *joydata)
@@ -77,9 +81,38 @@ void translate_event(joydata_t *joydata)
 	joydata->event_out = joydata->event_in;
 }
 
+uint64_t timeval_to_microseconds(struct timeval timestamp)
+{
+	return timestamp.tv_usec + timestamp.tv_sec * 1000000;
+}
+
+void *log_event(struct input_event *event)
+{
+	/* TODO */
+	printf("Event\n");
+	printf("\ttimestamp: %llu uS\n", timeval_to_microseconds(event->time));
+	printf("\ttype: %u\n", event->type);
+	printf("\tcode: %u\n", event->code);
+	printf("\tvalue: %u\n", event->value);
+}
+
 void write_event(joydata_t *joydata)
 {
 	/* TODO */
+	if (!joydata->read_pending)
+	{
+#ifdef DEBUG
+		/* WTF?! */
+		printf("In write_event(...) with no event pending. Something is wrong.\n");
+#endif
+		return;
+	}
+
+	joydata->read_pending = 0;
+
+#ifdef DEBUG
+	log_event(&joydata->event_out);
+#endif
 }
 
 void rate_limit(joydata_t *joydata)
