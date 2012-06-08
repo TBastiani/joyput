@@ -1,12 +1,8 @@
-/*
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <unistd.h>
 #include <linux/input.h>
 
 #define DEBUG
@@ -16,6 +12,7 @@ typedef struct joydata
 {
 	int					fd_in;
 	struct input_event	event_in;
+	int					read_pending;
 	struct input_event	event_out;
 	int					stop_now;
 } joydata_t;
@@ -67,7 +64,17 @@ void open_output(joydata_t *joydata)
 
 void read_event(joydata_t *joydata)
 {
+	int size;
+	size = read(joydata->fd_in, &joydata->event_in, sizeof(struct input_event));
+
+	if (size < sizeof(struct input_event))
+		die("Read a length lower than sizeof(struct input_event). Case not handled.");
+}
+
+void translate_event(joydata_t *joydata)
+{
 	/* TODO */
+	joydata->event_out = joydata->event_in;
 }
 
 void write_event(joydata_t *joydata)
