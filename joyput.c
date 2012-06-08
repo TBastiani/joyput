@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <linux/input.h>
 
+#include "utils.h"
+
 #define DEBUG
 #define DEFAULT_INPUT_FILENAME "joystick0"
 
@@ -81,17 +83,12 @@ void translate_event(joydata_t *joydata)
 	joydata->event_out = joydata->event_in;
 }
 
-uint64_t timeval_to_microseconds(struct timeval timestamp)
-{
-	return timestamp.tv_usec + timestamp.tv_sec * 1000000;
-}
-
 void *log_event(struct input_event *event)
 {
 	/* TODO */
 	printf("Event\n");
 	printf("\ttimestamp: %llu uS\n", timeval_to_microseconds(event->time));
-	printf("\ttype: %u\n", event->type);
+	printf("\ttype: %s\n", type_from_int(event->type));
 	printf("\tcode: %u\n", event->code);
 	printf("\tvalue: %u\n", event->value);
 }

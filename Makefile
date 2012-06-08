@@ -1,7 +1,6 @@
-BIN=joyput
+all: joyput
 
-all: $(BIN)
-
-uinput-sample: joyput.c
+joyput: joyput.c utils.c
+	$(CC) -O0 -g -o joyput joyput.c utils.c
 
 PHONY: all
