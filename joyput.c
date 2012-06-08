@@ -60,6 +60,26 @@ void open_input(joydata_t *joydata, int argc, char **argv)
 	joydata->fd_in = fd;
 }
 
+void open_output(joydata_t *joydata)
+{
+	/* TODO */
+}
+
+void read_event(joydata_t *joydata)
+{
+	/* TODO */
+}
+
+void write_event(joydata_t *joydata)
+{
+	/* TODO */
+}
+
+void rate_limit(joydata_t *joydata)
+{
+	/* TODO */
+}
+
 void close_fds(joydata_t *joydata)
 {
 	if (joydata->fd_in)
@@ -75,12 +95,19 @@ int main(int argc, char **argv)
 	global_data = &joydata;
 
 	open_input(&joydata, argc, argv);
+	open_output(&joydata);
 
 	signal(SIGINT, signal_handler);
 
 	while (!joydata.stop_now)
 	{
-		sleep(10);
+		read_event(&joydata);
+
+		translate_event(&joydata);
+
+		write_event(&joydata);
+
+		rate_limit(&joydata);
 	}
 
 #ifdef DEBUG
