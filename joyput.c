@@ -22,6 +22,14 @@ typedef struct joydata
 
 joydata_t *global_data = 0;
 
+void signal_handler(int signal)
+{
+	if (global_data)
+	{
+		global_data->stop_now = 1;
+	}
+}
+
 void die(const char *message)
 {
 	printf("Fatal error : %s\n", message);
@@ -58,14 +66,6 @@ void close_fds(joydata_t *joydata)
 	{
 		close(joydata->fd_in);
 		joydata->fd_in = 0;
-	}
-}
-
-void signal_handler(int signal)
-{
-	if (global_data)
-	{
-		global_data->stop_now = 1;
 	}
 }
 
