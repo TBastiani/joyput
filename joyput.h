@@ -7,6 +7,7 @@
 typedef struct joydata
 {
 	int					fd_in;
+	int					fd_out;
 	struct input_event	event_in;
 	int					read_pending;
 	struct input_event	event_out;

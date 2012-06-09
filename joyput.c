@@ -6,22 +6,12 @@
 #include <sys/time.h>
 #include <stdint.h>
 #include <linux/input.h>
+#include <linux/uinput.h>
 
 #include "utils.h"
+#include "joyput.h"
 
-#define DEBUG
-#define DEFAULT_INPUT_FILENAME "joystick0"
-
-typedef struct joydata
-{
-	int					fd_in;
-	struct input_event	event_in;
-	int					read_pending;
-	struct input_event	event_out;
-	int					stop_now;
-} joydata_t;
-
-joydata_t *global_data = 0;
+static joydata_t *global_data = 0;
 
 void signal_handler(int signal)
 {
@@ -59,11 +49,6 @@ void open_input(joydata_t *joydata, int argc, char **argv)
         die("error: could not open file");
 
 	joydata->fd_in = fd;
-}
-
-void open_output(joydata_t *joydata)
-{
-	/* TODO */
 }
 
 void read_event(joydata_t *joydata)
@@ -124,6 +109,17 @@ void close_fds(joydata_t *joydata)
 		close(joydata->fd_in);
 		joydata->fd_in = 0;
 	}
+
+	if (joydata->fd_out)
+	{
+    	if(ioctl(joydata->fd_out, UI_DEV_DESTROY) < 0)
+        	die("Could not destroy uinput keyboard.");
+    	close(joydata->fd_out);
+		joydata->fd_out = 0;
+#ifdef DEBUG
+		printf("Successfully destroyed uinput device\n");
+#endif
+	}
 }
 
 int main(int argc, char **argv)
@@ -132,7 +128,7 @@ int main(int argc, char **argv)
 	global_data = &joydata;
 
 	open_input(&joydata, argc, argv);
-	open_output(&joydata);
+	open_keyboard_device(&joydata);
 
 	signal(SIGINT, signal_handler);
 
