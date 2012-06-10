@@ -21,9 +21,13 @@ void open_keyboard_device(joydata_t *joydata)
 	/* Register keyboard */
     if(ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0)
         die("Could not complete ioctl call.");
-	/* Register mouse left button */
-    if(ioctl(fd, UI_SET_KEYBIT, BTN_LEFT) < 0)
-        die("Could not complete ioctl call.");
+
+	/* Register keyboard */
+	for (int i = 0; i < KEY_CNT; i++)
+	{
+    	if(ioctl(fd, UI_SET_KEYBIT, i) < 0)
+        	die("Could not complete ioctl call.");
+	}
 
 	/* Register relative position device */
     if(ioctl(fd, UI_SET_EVBIT, EV_REL) < 0)
