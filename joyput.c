@@ -21,30 +21,6 @@ void signal_handler(int signal)
 	}
 }
 
-void open_input(joydata_t *joydata, int argc, char **argv)
-{
-	char input_filename[200];
-	int fd;
-	if (argc >= 2)
-	{
-		snprintf(input_filename, 200, "/dev/input/%s", argv[1]);
-	}
-	else
-	{
-		snprintf(input_filename, 200, "/dev/input/%s", DEFAULT_INPUT_FILENAME);
-	}
-
-#ifdef DEBUG
-	printf("Trying to open file at : %s\n", input_filename);
-#endif
-
-    fd = open(input_filename, O_RDONLY);
-    if (fd < 0)
-        die("error: could not open file");
-
-	joydata->fd_in = fd;
-}
-
 void translate_event(joydata_t *joydata)
 {
 	/* TODO */
@@ -109,7 +85,7 @@ int main(int argc, char **argv)
 	joydata_t joydata = {0};
 	global_data = &joydata;
 
-	open_input(&joydata, argc, argv);
+	open_joystick_input(&joydata.fd_in, argc, argv);
 	open_keyboard_device(&joydata);
 
 	signal(SIGINT, signal_handler);

@@ -4,8 +4,6 @@
 #include <linux/uinput.h>
 #include <linux/joystick.h>
 
-#define DEFAULT_INPUT_FILENAME "js0"
-
 typedef struct joydata
 {
 	int					fd_in;
