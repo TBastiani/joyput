@@ -4,7 +4,6 @@
 #include <linux/uinput.h>
 #include <linux/joystick.h>
 
-#define DEBUG
 #define DEFAULT_INPUT_FILENAME "js0"
 
 typedef struct joydata
@@ -16,8 +15,6 @@ typedef struct joydata
 	struct input_event	event_out;
 	int					stop_now;
 } joydata_t;
-
-void die(const char *message);
 
 void open_keyboard_device(joydata_t *joydata);
 

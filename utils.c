@@ -1,7 +1,16 @@
-#include "utils.h"
 #include <linux/input.h>
 #include <stdint.h>
 #include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "utils.h"
+
+void die(const char *message)
+{
+	printf("Fatal error : %s\n", message);
+	exit(-1);
+}
 
 uint64_t timeval_to_microseconds(struct timeval timestamp)
 {

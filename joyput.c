@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
@@ -10,6 +9,7 @@
 
 #include "utils.h"
 #include "joyput.h"
+#include "joystick_read.h"
 
 static joydata_t *global_data = 0;
 
@@ -19,12 +19,6 @@ void signal_handler(int signal)
 	{
 		global_data->stop_now = 1;
 	}
-}
-
-void die(const char *message)
-{
-	printf("Fatal error : %s\n", message);
-	exit(-1);
 }
 
 void open_input(joydata_t *joydata, int argc, char **argv)
@@ -49,17 +43,6 @@ void open_input(joydata_t *joydata, int argc, char **argv)
         die("error: could not open file");
 
 	joydata->fd_in = fd;
-}
-
-void read_event(joydata_t *joydata)
-{
-	int size;
-	size = read(joydata->fd_in, &joydata->event_in, sizeof(struct js_event));
-
-	if (size < sizeof(struct js_event))
-		die("Read a length lower than sizeof(struct input_event). Case not handled.");
-
-	// FIXME joydata->read_pending = 1;
 }
 
 void translate_event(joydata_t *joydata)
@@ -133,7 +116,7 @@ int main(int argc, char **argv)
 
 	while (!joydata.stop_now)
 	{
-		read_event(&joydata);
+		read_joystick_event(joydata.fd_in, &joydata.event_in);
 
 		translate_event(&joydata);
 

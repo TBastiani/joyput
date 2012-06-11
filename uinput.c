@@ -1,13 +1,12 @@
 #include <linux/uinput.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 
 #include "joyput.h"
+#include "utils.h"
 
 void open_keyboard_device(joydata_t *joydata)
 {
