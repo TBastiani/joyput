@@ -2,7 +2,7 @@
 #define __JOYPUT_H__
 
 #define DEBUG
-#define DEFAULT_INPUT_FILENAME "joystick0"
+#define DEFAULT_INPUT_FILENAME "js0"
 
 typedef struct joydata
 {
