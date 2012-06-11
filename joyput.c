@@ -54,24 +54,22 @@ void open_input(joydata_t *joydata, int argc, char **argv)
 void read_event(joydata_t *joydata)
 {
 	int size;
-	size = read(joydata->fd_in, &joydata->event_in, sizeof(struct input_event));
+	size = read(joydata->fd_in, &joydata->event_in, sizeof(struct js_event));
 
-	if (size < sizeof(struct input_event))
+	if (size < sizeof(struct js_event))
 		die("Read a length lower than sizeof(struct input_event). Case not handled.");
 
-	joydata->read_pending = 1;
+	// FIXME joydata->read_pending = 1;
 }
 
 void translate_event(joydata_t *joydata)
 {
 	/* TODO */
-	joydata->event_out = joydata->event_in;
 }
 
-void *log_event(struct input_event *event)
+void *log_keyboard_event(struct input_event *event)
 {
-	/* TODO */
-	printf("Event\n");
+	printf("Keyboard event\n");
 	printf("\ttimestamp: %llu uS\n", timeval_to_microseconds(event->time));
 	printf("\ttype: %s\n", type_from_int(event->type));
 	printf("\tcode: %u\n", event->code);
@@ -83,6 +81,7 @@ void write_event(joydata_t *joydata)
 	/* TODO */
 	if (!joydata->read_pending)
 	{
+		return; /* FIXME remove statement */
 #ifdef DEBUG
 		/* WTF?! */
 		printf("In write_event(...) with no event pending. Something is wrong.\n");
@@ -93,7 +92,7 @@ void write_event(joydata_t *joydata)
 	joydata->read_pending = 0;
 
 #ifdef DEBUG
-	log_event(&joydata->event_out);
+	log_keyboard_event(&joydata->event_out);
 #endif
 }
 
