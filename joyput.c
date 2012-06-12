@@ -26,10 +26,10 @@ void translate_event(joydata_t *joydata)
 	/* TODO */
 }
 
-void *log_keyboard_event(struct input_event *event)
+void log_keyboard_event(struct input_event *event)
 {
 	printf("Keyboard event\n");
-	printf("\ttimestamp: %llu uS\n", timeval_to_microseconds(event->time));
+	printf("\ttimestamp: %llu uS\n", (unsigned long long) timeval_to_microseconds(event->time));
 	printf("\ttype: %s\n", type_from_int(event->type));
 	printf("\tcode: %u\n", event->code);
 	printf("\tvalue: %u\n", event->value);
