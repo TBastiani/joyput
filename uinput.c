@@ -11,7 +11,7 @@
 void open_keyboard_device(joydata_t *joydata)
 {
 	int fd;
-    struct uinput_user_dev uinput_device = {0};
+    struct uinput_user_dev uinput_device = {{0}};
 	
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0)
