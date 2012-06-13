@@ -33,7 +33,7 @@ void log_keyboard_event(struct input_event *event)
 
 void write_event(joydata_t *joydata)
 {
-	/* TODO */
+	size_t size;
 	if (!joydata->write_pending)
 	{
 		return;
@@ -43,6 +43,9 @@ void write_event(joydata_t *joydata)
 #endif
 		return;
 	}
+	size = write(joydata->fd_out, &joydata->event_out, sizeof(struct input_event));
+	if (size < sizeof(struct input_event))
+		die("Could not write the full size of an input_event structure.");
 
 	joydata->write_pending = 0;
 
@@ -83,10 +86,11 @@ int main(int argc, char **argv)
 	joydata_t joydata = {0};
 	global_data = &joydata;
 
+	signal(SIGINT, signal_handler);
+
 	open_joystick_input(&joydata.fd_in, argc, argv);
 	open_keyboard_device(&joydata);
-
-	signal(SIGINT, signal_handler);
+	read_config();
 
 	while (!joydata.stop_now)
 	{
