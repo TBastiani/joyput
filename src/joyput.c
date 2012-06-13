@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "joyput.h"
 #include "joystick_read.h"
+#include "translate.h"
 
 static joydata_t *global_data = 0;
 
@@ -19,11 +20,6 @@ void signal_handler(int signal)
 	{
 		global_data->stop_now = 1;
 	}
-}
-
-void translate_event(joydata_t *joydata)
-{
-	/* TODO */
 }
 
 void log_keyboard_event(struct input_event *event)
@@ -38,9 +34,9 @@ void log_keyboard_event(struct input_event *event)
 void write_event(joydata_t *joydata)
 {
 	/* TODO */
-	if (!joydata->read_pending)
+	if (!joydata->write_pending)
 	{
-		return; /* FIXME remove statement */
+		return;
 #ifdef DEBUG
 		/* WTF?! */
 		printf("In write_event(...) with no event pending. Something is wrong.\n");
@@ -48,7 +44,7 @@ void write_event(joydata_t *joydata)
 		return;
 	}
 
-	joydata->read_pending = 0;
+	joydata->write_pending = 0;
 
 #ifdef DEBUG
 	log_keyboard_event(&joydata->event_out);
@@ -60,7 +56,7 @@ void rate_limit(joydata_t *joydata)
 	/* TODO */
 }
 
-void close_fds(joydata_t *joydata)
+void teardown(joydata_t *joydata)
 {
 	if (joydata->fd_in)
 	{
@@ -78,6 +74,8 @@ void close_fds(joydata_t *joydata)
 		printf("Successfully destroyed uinput device\n");
 #endif
 	}
+
+	set_button_map(NULL);
 }
 
 int main(int argc, char **argv)
@@ -92,7 +90,7 @@ int main(int argc, char **argv)
 
 	while (!joydata.stop_now)
 	{
-		read_joystick_event(joydata.fd_in, &joydata.event_in);
+		read_joystick_event(&joydata);
 
 		translate_event(&joydata);
 
@@ -105,6 +103,6 @@ int main(int argc, char **argv)
 	printf("Exiting properly...\n");
 #endif
 
-    close_fds(&joydata);
+    teardown(&joydata);
     return 0;
 }

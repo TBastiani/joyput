@@ -10,6 +10,7 @@ typedef struct joydata
 	int					fd_out;
 	struct js_event		event_in;
 	int					read_pending;
+	int					write_pending;
 	struct input_event	event_out;
 	int					stop_now;
 } joydata_t;

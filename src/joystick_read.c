@@ -3,6 +3,7 @@
 
 #include "joystick_read.h"
 #include "utils.h"
+#include "joyput.h"
 
 void configure_joystick(int fd)
 {
@@ -76,19 +77,19 @@ void open_joystick_input(int *out_fd, int argc, char **argv)
 	 */
 }
 
-void read_joystick_event(int fd, struct js_event *input_event)
+void read_joystick_event(joydata_t *joydata)
 {
 	int size;
-	size = read(fd, input_event, sizeof(struct js_event));
+	size = read(joydata->fd_in, &joydata->event_in, sizeof(struct js_event));
 
 	if (size < sizeof(struct js_event))
 		die("Read a length lower than sizeof(struct js_event). Case not handled.");
 
 #ifdef DEBUG
-	log_joystick_event(input_event);
+	log_joystick_event(&joydata->event_in);
 #endif
 
-	// FIXME joydata->read_pending = 1;
+	joydata->read_pending = 1;
 }
 
 char *js_type_from_int(uint8_t type)

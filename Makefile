@@ -1,5 +1,5 @@
 # -- File list ----------
-FILE = joyput.c utils.c uinput.c joystick_read.c
+FILE = joyput.c utils.c uinput.c joystick_read.c translate.c
 C_OPTION = -std=c99 -Wall
 CC=clang
 OS = LINUX
