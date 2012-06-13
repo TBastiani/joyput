@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <strings.h>
+#include <linux/joystick.h>
 
 #include "joystick_read.h"
 #include "utils.h"
@@ -112,7 +113,7 @@ char *js_type_from_int(uint8_t type)
 
 void log_joystick_event(struct js_event *event)
 {
-	printf("Keyboard event\n");
+	printf("Joypad event\n");
 	printf("\ttimestamp: %u uS\n", event->time);
 	printf("\ttype: %s\n", js_type_from_int(event->type));
 	printf("\taxis number: %u\n", event->number);
