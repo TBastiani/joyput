@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <strings.h>
 
 #include "joystick_read.h"
 #include "utils.h"
@@ -9,21 +10,40 @@ void configure_joystick(int fd)
 	/* Query button number and register them */
     if(ioctl(fd, JSIOCGBUTTONS, &number) < 0)
         die("Could not complete ioctl call.");
-
 #ifdef DEBUG
 	printf("Found %d button(s) on joypad device.\n", number);
 #endif
+	if (number > KEY_MAX - BTN_MISC)
+	{
+		die("More buttons on joypad than allowed. This shouldn't happen.");
+	}
 
-	uint8_t button_map[ABS_CNT] = {0};
-	for (uint8_t i = 0; i < number; i++)
+	uint16_t button_map[KEY_MAX - BTN_MISC + 1] = {0};
+	for (int i = 0; i < number; i++)
 	{
 		button_map[i] = 1;
 	}
-    if(ioctl(fd, JSIOCSBTNMAP, button_map) < 0)
+	if (ioctl(fd, JSIOCSBTNMAP, button_map) < 0)
     	die("Could not complete ioctl call.");
-	/* <- FIXME */
 
 	/* Query axes number and register them. */
+    if(ioctl(fd, JSIOCGAXES, &number) < 0)
+        die("Could not complete ioctl call.");
+#ifdef DEBUG
+	printf("Found %d axe(s) on joypad device.\n", number);
+#endif
+	if (number > ABS_CNT)
+	{
+		die("More axes on joypad than allowed. This shouldn't happen.");
+	}
+
+	uint8_t axes_map[ABS_CNT] = {0};
+	for (int i = 0; i < number; i++)
+	{
+		axes_map[i] = 1;
+	}
+	if (ioctl(fd, JSIOCSAXMAP, axes_map) < 0)
+    	die("Could not complete ioctl call.");
 }
 
 void open_joystick_input(int *out_fd, int argc, char **argv)
@@ -38,7 +58,6 @@ void open_joystick_input(int *out_fd, int argc, char **argv)
 	{
 		snprintf(input_filename, 200, "/dev/input/%s", DEFAULT_INPUT_FILENAME);
 	}
-
 #ifdef DEBUG
 	printf("Trying to open file at : %s\n", input_filename);
 #endif
@@ -49,7 +68,12 @@ void open_joystick_input(int *out_fd, int argc, char **argv)
 
 	*out_fd = fd;
 
+	/**
+	 * FIXME Not called because it fails for some reason.
+	 * It's possible that the sixaxis driver was compiled against 
+	 * a kernel that is too old
 	configure_joystick(fd);
+	 */
 }
 
 void read_joystick_event(int fd, struct js_event *input_event)
