@@ -4,8 +4,8 @@
 
 typedef struct button_map
 {
-	int8_t button_index;
-	int8_t axis_index;
+	uint8_t is_an_axis;
+	uint8_t joy_index;
 	uint16_t axis_threshold;
 	uint16_t key_index;
 	struct button_map *next;
