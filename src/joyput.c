@@ -47,6 +47,14 @@ void write_event(joydata_t *joydata)
 	if (size < sizeof(struct input_event))
 		die("Could not write the full size of an input_event structure.");
 
+	joydata->event_out.type = EV_SYN;
+	joydata->event_out.code = 0;
+	joydata->event_out.value = 0;
+
+	size = write(joydata->fd_out, &joydata->event_out, sizeof(struct input_event));
+	if (size < sizeof(struct input_event))
+		die("Could not write the full size of an input_event structure.");
+
 	joydata->write_pending = 0;
 
 #ifdef DEBUG
