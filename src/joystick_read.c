@@ -23,7 +23,7 @@ void configure_joystick(int fd)
 	uint16_t button_map[KEY_MAX - BTN_MISC + 1] = {0};
 	for (int i = 0; i < number; i++)
 	{
-		button_map[i] = 1;
+		button_map[i] = i + BTN_MISC;
 	}
 	if (ioctl(fd, JSIOCSBTNMAP, button_map) < 0)
     	die("Could not complete ioctl call.");
@@ -42,7 +42,7 @@ void configure_joystick(int fd)
 	uint8_t axes_map[ABS_CNT] = {0};
 	for (int i = 0; i < number; i++)
 	{
-		axes_map[i] = 1;
+		axes_map[i] = i;
 	}
 	if (ioctl(fd, JSIOCSAXMAP, axes_map) < 0)
     	die("Could not complete ioctl call.");
@@ -70,12 +70,7 @@ void open_joystick_input(int *out_fd, int argc, char **argv)
 
 	*out_fd = fd;
 
-	/**
-	 * FIXME Not called because it fails for some reason.
-	 * It's possible that the sixaxis driver was compiled against 
-	 * a kernel that is too old
 	configure_joystick(fd);
-	 */
 }
 
 void read_joystick_event(joydata_t *joydata)
